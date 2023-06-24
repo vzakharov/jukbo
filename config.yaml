@@ -17,4 +17,4 @@ flows:
         content: 'Here are your projects, pick one to open:'
         ui:
           type: choices
-          choices: '@response.data'
+          choices: '@response.data[0]'
