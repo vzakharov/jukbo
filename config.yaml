@@ -1,12 +1,12 @@
 texts: {}
 dicts: {}
 flows:
-  - slug: listProjects
-    name: List projects
+  - slug: start
+    name: Start navigation
     description: Shows a list of projects to open or create a new one
     trigger:
       type: slashCommand
-      command: /projects
+      command: /start
     actions:
       - action: externalRequest
         method: POST
@@ -44,8 +44,8 @@ flows:
             - null
       - action: setVariables
         variables:
-          samples: '@response.data[0][8].choices'
-          currentSample: '@response.data[0][8].value'
+          samples: '@response.data[8].choices'
+          currentSample: '@response.data[8].value'
       - action: sendMessage
         content: 'Here are your samples, pick one to open (the current one is {{currentSample}}):'
         ui:
