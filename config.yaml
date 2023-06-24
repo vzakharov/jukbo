@@ -84,7 +84,7 @@ flows:
               url: '{{env.apiUrl}}/get-project'
               data:
                 data:
-                  - '@last.getSample.fields.project.input'
+                  - '@user.last.getSample.fields.project.input'
                   - null
             - action: setVariables
               variables:
