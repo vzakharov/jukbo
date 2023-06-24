@@ -18,6 +18,9 @@ flows:
         ui:
           type: choices
           choices: '@response.data[0]'
+      - action: setVariables
+        variables:
+          project: '@choice.value'
       - action: externalRequest
         method: POST
         # For reference, from Gradio specs for the UI element/API call:
@@ -40,14 +43,14 @@ flows:
         url: '{{env.apiUrl}}/get-project'
         data:
           data:
-            - '@choice.value'
+            - '@project'
             - null
       - action: setVariables
         variables:
-          samples: '@response.data[8].choices'
-          currentSample: '@response.data[8].value'
+          samples: '@getSampleNamesFromResponse()'
+          currentSample: '@getCurrentSampleNameFromResponse()'
       - action: sendMessage
-        content: 'Here are your samples, pick one to open (the current one is {{currentSample}}):'
+        content: 'Here are your samples, pick one to open (the current one is `{{currentSample}}`):'
         ui:
           type: choices
           choices: '@samples'
