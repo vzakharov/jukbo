@@ -39,8 +39,9 @@ flows:
         # We're interested in the `sample_tree` variable, which holds both the list of samples for the project and the current sample.
         url: '{{env.apiUrl}}/get-project'
         data:
-          - '@choice.value'
-          - null
+          data:
+            - '@choice.value'
+            - null
       - action: setVariables
         variables:
           samples: '@response.data[0][8].choices'
