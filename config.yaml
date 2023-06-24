@@ -1,56 +1,95 @@
 texts: {}
 dicts: {}
 flows:
-  - slug: start
-    name: Start navigation
-    description: Shows a list of projects to open or create a new one
+  # - slug: start
+  #   name: Start navigation
+  #   description: Shows a list of projects to open or create a new one
+  #   trigger:
+  #     type: slashCommand
+  #     command: /start
+  #   actions:
+  #     - action: externalRequest
+  #       method: POST
+  #       url: '{{env.apiUrl}}/get-projects'
+  #       data:
+  #         data: []
+  #     - action: sendMessage
+  #       content: 'Here are your projects, pick one to open:'
+  #       ui:
+  #         type: choices
+  #         choices: '@response.data[0]'
+  #     - action: setVariables
+  #       variables:
+  #         project: '@choice.value'
+  #     - action: externalRequest
+  #       method: POST
+  #       # For reference, from Gradio specs for the UI element/API call:
+  #       # UI.project_name.render().change(
+  #       #   inputs = [ UI.project_name, UI.routed_sample_id ],
+  #       #   outputs = [ 
+  #       #     UI.create_project_box, UI.settings_box, *UI.project_settings, UI.getting_started_column, UI.workspace_column, UI.first_generation_row, 
+  #       #     UI.sample_tree_row, UI.sample_box 
+  #       #   ],
+  #       #   fn = get_project,
+  #       #   api_name = 'get-project'
+  #       # )
+  #       # where
+  #       # UI.project_settings = [ 
+  #       #   *generation_params, sample_tree, show_leafs_only, preview_just_the_last_n_sec,
+  #       #   genre_for_upsampling_left_channel, genre_for_upsampling_center_channel, genre_for_upsampling_right_channel 
+  #       # ]
+  #       # generation_params = [ artist, genre, lyrics, n_samples, temperature, generation_length ]
+  #       # We're interested in the `sample_tree` variable, which holds both the list of samples for the project and the current sample.
+  #       url: '{{env.apiUrl}}/get-project'
+  #       data:
+  #         data:
+  #           - '@project'
+  #           - null
+  #     - action: setVariables
+  #       variables:
+  #         samples: '@getSampleNamesFromResponse()'
+  #         currentSample: '@getCurrentSampleNameFromResponse()'
+  #     - action: sendMessage
+  #       content: 'Here are your samples, pick one to open (the current one is `{{currentSample}}`):'
+  #       ui:
+  #         type: choices
+  #         choices: '@samples'
+  - slug: getSample
+    name: Get sample
+    description: Get a sample using project name and sample name
     trigger:
       type: slashCommand
-      command: /start
+      command: /sample
+      options:
+        - type: string
+          name: project
+          description: Project name
+          required: true
+          autocomplete:
+            - action: externalRequest
+              method: POST
+              url: '{{env.apiUrl}}/get-projects'
+              data:
+                data: []
+            - action: setVariables
+              variables:
+                autocomplete.choices: '@response.data[0]'
+        - type: string
+          name: sample
+          description: Sample name
+          required: true
+          autocomplete:
+            - action: externalRequest
+              method: POST
+              url: '{{env.apiUrl}}/get-project'
+              data:
+                data:
+                  - '@last.getSample.project.input'
+                  - null
+            - action: setVariables
+              variables:
+                autocomplete.choices: '@getSampleNamesFromResponse()'
     actions:
-      - action: externalRequest
-        method: POST
-        url: '{{env.apiUrl}}/get-projects'
-        data:
-          data: []
+    # Just a dummy "you have selected" message
       - action: sendMessage
-        content: 'Here are your projects, pick one to open:'
-        ui:
-          type: choices
-          choices: '@response.data[0]'
-      - action: setVariables
-        variables:
-          project: '@choice.value'
-      - action: externalRequest
-        method: POST
-        # For reference, from Gradio specs for the UI element/API call:
-        # UI.project_name.render().change(
-        #   inputs = [ UI.project_name, UI.routed_sample_id ],
-        #   outputs = [ 
-        #     UI.create_project_box, UI.settings_box, *UI.project_settings, UI.getting_started_column, UI.workspace_column, UI.first_generation_row, 
-        #     UI.sample_tree_row, UI.sample_box 
-        #   ],
-        #   fn = get_project,
-        #   api_name = 'get-project'
-        # )
-        # where
-        # UI.project_settings = [ 
-        #   *generation_params, sample_tree, show_leafs_only, preview_just_the_last_n_sec,
-        #   genre_for_upsampling_left_channel, genre_for_upsampling_center_channel, genre_for_upsampling_right_channel 
-        # ]
-        # generation_params = [ artist, genre, lyrics, n_samples, temperature, generation_length ]
-        # We're interested in the `sample_tree` variable, which holds both the list of samples for the project and the current sample.
-        url: '{{env.apiUrl}}/get-project'
-        data:
-          data:
-            - '@project'
-            - null
-      - action: setVariables
-        variables:
-          samples: '@getSampleNamesFromResponse()'
-          currentSample: '@getCurrentSampleNameFromResponse()'
-      - action: sendMessage
-        content: 'Here are your samples, pick one to open (the current one is `{{currentSample}}`):'
-        ui:
-          type: choices
-          choices: '@samples'
+        content: 'You have selected `{{project}}` and `{{sample}}`'
