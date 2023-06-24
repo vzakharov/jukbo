@@ -1,0 +1,18 @@
+flows:
+  - slug: listProjects
+    name: List projects
+    description: Shows a list of projects to open or create a new one
+    trigger:
+      type: slashCommand
+      command: /projects
+    actions:
+      - action: externalRequest
+        method: POST
+        url: '{{env.apiUrl}}/get-projects'
+        body:
+          data: []
+      - action: sendMessage
+        content: 'Here are your projects, pick one to open:'
+        ui:
+          type: choices
+          choices: '@response.data'
