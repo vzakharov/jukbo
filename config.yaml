@@ -11,7 +11,7 @@ flows:
       - action: externalRequest
         method: POST
         url: '{{env.apiUrl}}/get-projects'
-        body:
+        data:
           data: []
       - action: sendMessage
         content: 'Here are your projects, pick one to open:'
