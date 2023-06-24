@@ -5,6 +5,7 @@ function removeProjectNamePrefix( projectName ) {
 };
 
 export function getSampleNamesFromResponse({ project, response: { data } }) {
+  debugger
   const samplesData = data[8];
   const sampleNames = samplesData.choices.map( removeProjectNamePrefix( project ) );
   return sampleNames;
